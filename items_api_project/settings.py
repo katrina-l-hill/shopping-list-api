@@ -11,25 +11,50 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    DEBUG=(bool, False),
+    ENVIRONMENT=(str, "PRODUCTION"),
+    ALLOW_ALL_ORIGINS=(bool, False),
+    ALLOWED_HOSTS=(list, []),
+    ALLOWED_ORIGINS=(list, []),
+    DATABASE_ENGINE=(str, "django.db.backends.sqlite3"),
+    DATABASE_NAME=(str, BASE_DIR / "db.sqlite3"),
+    DATABASE_USER=(str, ""),
+    DATABASE_PASSWORD=(str, ""),
+    DATABASE_HOST=(str, ""),
+    DATABASE_PORT=(int, 5432),
+)
+
+environ.Env.read_env()
+
+ENVIRONMENT = env.str("ENVIRONMENT")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%s5h2pnj5(scfr34o%#s4&2s2@(o&p2rajs@jvuor2_7w(-8i="
+# SECRET_KEY = "django-insecure-%s5h2pnj5(scfr34o%#s4&2s2@(o&p2rajs@jvuor2_7w(-8i="
+
+SECRET_KEY = env.str("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = [
-    "0.0.0.0",
-    "127.0.0.1",
-    "localhost",
-]
+DEBUG = env.bool("DEBUG")
+
+ALLOWED_HOSTS = tuple(env.list("ALLOWED_HOSTS"))
+
+# DEBUG = True
+
+# ALLOWED_HOSTS = [
+#     "0.0.0.0",
+#     "127.0.0.1",
+#     "localhost",
+# ]
 
 
 # Application definition
@@ -84,23 +109,33 @@ WSGI_APPLICATION = "items_api_project.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "postgres",
-#         "USER": "postgres",
-#         "PASSWORD": "postgres",
+#         "NAME": "ytwwnsut",
+#         "USER": "ytwwnsut",
+#         "PASSWORD": "Ld05j5XsiR240hjnnF1pe2GGWAoZ_fE6",
 #         "HOST": "db",
 #         "PORT": 5432,
 #     }
 # }
 
+DATABASES = {
+    "default": {
+        "ENGINE": env.str("DATABASE_ENGINE"),
+        "NAME": env.str("DATABASE_NAME"),
+        "USER": env.str("DATABASE_USER", ""),
+        "PASSWORD": env.str("DATABASE_PASSWORD", ""),
+        "HOST": env.str("DATABASE_HOST", ""),
+        "PORT": env.int("DATABASE_PORT", ""),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
